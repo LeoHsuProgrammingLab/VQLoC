@@ -20,7 +20,7 @@ from config.config import config, update_config
 from utils import exp_utils
 from evaluation import eval_utils
 from evaluation.task_inference_results import Task
-from model.corr_clip_spatial_transformer2_anchor_2heads import ClipMatcher
+from model.corr_clip_spatial_transformer2_anchor_2heads_hnm import ClipMatcher
 
 
 class WorkerWithDevice(mp.Process):
@@ -113,6 +113,40 @@ def format_predictions(annotations, predicted_rts):
         predictions["results"]["videos"].append(video_predictions)
     return predictions
 
+def format_my_predictions(annotations, predicted_rts):
+    output_json = {}
+    for clip_uid, v in annotations.items():
+        predictions = {"predictions": []}
+        # assert len(v["annotations"]) == 1
+        for annot in v["annotations"]: # v["annotations"] is a list of dicts
+            annot_set = {"query_sets": {}}
+            annotation_uid = annot["annotation_uid"]
+            for query_set in annot["query_sets"].keys():
+                bbx_score_set = {}
+                bbx_list = []
+                clip_query_set_tuple = (annotation_uid, query_set)
+                if clip_query_set_tuple in predicted_rts:
+                    for bbox in predicted_rts[clip_query_set_tuple][0].bboxes:
+                        bbx_list.append(
+                            {   
+                                "x1": int(bbox.x1),
+                                "y1": int(bbox.y1),
+                                "x2": int(bbox.x2),
+                                "y2": int(bbox.y2),
+                                "fno": int(bbox.fno),
+                            }
+                        )
+                    bbx_score_set['score'] = predicted_rts[clip_query_set_tuple][0].score
+                else:
+                    predictions[clip_query_set_tuple] = []
+                bbx_score_set['bboxes'] = bbx_list
+                annot_set['query_sets'][query_set] = bbx_score_set
+
+            predictions["predictions"].append(annot_set)
+        
+        output_json[clip_uid] = predictions
+    
+    return output_json
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train hand reconstruction network')
@@ -145,10 +179,12 @@ if __name__ == '__main__':
     random.seed(config.seed)
 
     mode = 'test_unannotated' if args.eval else 'val'
-    annotation_path = os.path.join('/vision/hwjiang/episodic-memory/VQ2D/data', 'vq_{}.json'.format(mode))
+    path = "/home/leohsu-cs/DLCV2023/DLCV-Fall-2023-Final-2-boss-sdog/DLCV_vq2d_data"
+    # '/vision/hwjiang/episodic-memory/VQ2D/data'
+    annotation_path = os.path.join(path, 'vq_{}.json'.format(mode))
     with open(annotation_path) as fp:
         annotations = json.load(fp)
-    clipwise_annotations_list = eval_utils.convert_annotations_to_clipwise_list(annotations)
+    clipwise_annotations_list = eval_utils.convert_my_annotations_to_clipwise_list(annotations)
 
     if args.debug:
         clips_list = list(clipwise_annotations_list.keys())
@@ -159,7 +195,8 @@ if __name__ == '__main__':
         }
 
     predictions_rt = get_results(clipwise_annotations_list, config)
-    predictions = format_predictions(annotations, predictions_rt)
+    predictions = format_my_predictions(annotations, predictions_rt)
     if not args.debug:
-        with open(config.inference_cache_path + '_results.json.gz', 'w') as fp:
+        print(config.inference_cache_path)
+        with open(config.inference_cache_path + '_results.json', 'w') as fp:
             json.dump(predictions, fp)

@@ -36,7 +36,7 @@ model:
   pe_transformer: 'zero'
   window_transformer: 5
   positive_threshold: 0.3
-  cpt_path: './output/PATH_TO_THE_CHECKPOINT/cpt_best_prob.pth.tar'
+  cpt_path: './ckpt/cpt_best_prob.pth.tar'
 
 # loss config
 loss:

@@ -121,18 +121,23 @@ if __name__ == '__main__':
     random.seed(config.seed)
 
     mode = 'test_unannotated' if args.eval else 'val'
-    annotation_path = os.path.join('/vision/hwjiang/episodic-memory/VQ2D/data', 'vq_{}.json'.format(mode))
+    
+    path = "/home/leohsu-cs/DLCV2023/DLCV-Fall-2023-Final-2-boss-sdog/DLCV_vq2d_data"
+    # '/vision/hwjiang/episodic-memory/VQ2D/data'
+    annotation_path = os.path.join(path, 'vq_{}.json'.format(mode))
     with open(annotation_path) as fp:
         annotations = json.load(fp)
-    clipwise_annotations_list = eval_utils.convert_annotations_to_clipwise_list(annotations)
+    clipwise_annotations = eval_utils.convert_my_annotations_to_clipwise_list(annotations)
+    # clipwise_annotations_list = eval_utils.convert_annotations_to_clipwise_list(annotations)
 
     if args.debug:
         config.debug = True
-        clips_list = list(clipwise_annotations_list.keys())
+        clips_list = list(annotations.keys())
         clips_list = sorted([c for c in clips_list if c is not None])
         clips_list = clips_list[: 20]
         clipwise_annotations_list = {
-            k: clipwise_annotations_list[k] for k in clips_list
+            k: annotations[k] for k in clips_list
+            # k: clipwise_annotations_list[k] for k in clips_list
         }
 
-    perform_vq2d_inference(clipwise_annotations_list, config)
+    perform_vq2d_inference(clipwise_annotations, config)

@@ -37,7 +37,7 @@ model:
   window_transformer: 5
   positive_threshold: 0.3
   # best checkpoint
-  cpt_path: 'CPT_PATH/cpt_best_prob.pth.tar'
+  cpt_path: './ckpt/cpt_best_prob.pth.tar'
 
 # loss config
 loss:

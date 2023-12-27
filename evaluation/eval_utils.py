@@ -3,6 +3,34 @@ import numpy as np
 from utils.loss_utils import GiouLoss
 
 
+def convert_my_annotations_to_clipwise_list(annotations):
+    clipwise_annotations_list = {}
+
+    for k, v in annotations.items():
+        clipwise_annotations_list[k] = []
+        
+        for query_set in v["annotations"]:
+            annotation_uid = query_set["annotation_uid"]
+            for qid, q in query_set["query_sets"].items():
+                curr_q = {
+                    "metadata": {
+                        # "video_uid": k,
+                        # "video_start_sec": 0,
+                        # "video_end_sec": q["video_end_sec"],
+                        "clip_fps": 5,
+                        "query_set": qid,
+                        "annotation_uid": annotation_uid
+                    },
+                    "clip_uid": k,
+                    "query_frame": q["query_frame"],
+                    "visual_crop": q["visual_crop"],
+                }
+                if "response_track" in q:
+                    curr_q["response_track"] = q["response_track"]
+                clipwise_annotations_list[k].append(curr_q)
+
+    return clipwise_annotations_list
+
 def convert_annotations_to_clipwise_list(annotations):
     clipwise_annotations_list = {}
     for v in annotations["videos"]:

@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import math
 from torchvision import transforms
 from einops import rearrange
-from model.corr_clip_anchor import default_aspect_ratios
+# from model.corr_clip_anchor import default_aspect_ratios
 from utils.anchor_utils import assign_labels
 from dataset import dataset_utils
 

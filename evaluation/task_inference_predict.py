@@ -25,7 +25,8 @@ class Task:
             (annot["metadata"]["annotation_uid"], annot["metadata"]["query_set"])
             for annot in self.annots
         ]
-        self.clip_dir = '/vision/srama/Research/Ego4D/episodic-memory/VQ2D/data/clips_fullres'
+        self.clip_dir = "/home/leohsu-cs/DLCV2023/DLCV-Fall-2023-Final-2-boss-sdog/DLCV_vq2d_data/clips"
+        # '/vision/srama/Research/Ego4D/episodic-memory/VQ2D/data/clips_fullres'
 
     def run(self, model, config, device):
         clip_uid = self.annots[0]["clip_uid"]
@@ -160,7 +161,7 @@ def get_top_predictions(config, preds, num_frames, oshape):
     pred_hw = preds['hw']           # [b,t,N,2], actually half of hw
     pred_bbox = preds['bbox']       # [b,t,N,4]
     pred_prob = preds['prob']       # [b,t,N]
-
+    
     if len(pred_prob.shape) == 3:
         # with anchor
         b,t,N = pred_prob.shape
@@ -182,7 +183,7 @@ def get_top_predictions(config, preds, num_frames, oshape):
         pred_center = rearrange(pred_center, 'b t c -> (b t) c')
         pred_bbox = rearrange(pred_bbox, 'b t c -> (b t) c')
 
-        #iou = process_prob(top_idx, pred_prob, preds)    # [b*t,N]
+        # iou = process_prob(top_idx, pred_prob, preds)    # [b*t,N]
     pred_prob_raw = pred_prob.clone().detach().cpu()
     pred_bbox_raw = pred_bbox.clone().detach().cpu()
     pred_prob = pred_prob[:num_frames]

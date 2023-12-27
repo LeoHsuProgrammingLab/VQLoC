@@ -106,10 +106,11 @@ def process_inputs(clips, query):
     '''
     b, t, _, h, w = clips.shape
     normalization = kornia.enhance.Normalize(mean=NORMALIZE_MEAN, std=NORMALIZE_STD)
-
+    # ablation study
     clips = rearrange(clips, 'b t c h w -> (b t) c h w')
-    clips = normalization(clips)
+    clips = normalization(clips) 
     clips = rearrange(clips, '(b t) c h w -> b t c h w', b=b, t=t)
 
+    # ablation study: queries = query.unsqueeze(0).repeat(b,1,1,1)
     queries = normalization(query.unsqueeze(0).repeat(b,1,1,1)) # [b,c,h,w]
     return clips, queries
