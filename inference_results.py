@@ -182,6 +182,7 @@ if __name__ == '__main__':
 
     mode = 'test_unannotated' if args.eval else 'val'
     path = args.clipRoot
+    config.clip_root = path
     # "/home/leohsu-cs/DLCV2023/DLCV-Fall-2023-Final-2-boss-sdog/DLCV_vq2d_data"
     # '/vision/hwjiang/episodic-memory/VQ2D/data'
     annotation_path = os.path.join(path, 'vq_{}.json'.format(mode))
