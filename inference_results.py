@@ -158,6 +158,8 @@ def parse_args():
         "--debug", dest="debug", action="store_true",help="evaluate model")
     parser.add_argument(
         "--gt-fg", dest="gt_fg", action="store_true",help="evaluate model")
+    parser.add_argument(
+        "--clipRoot")
     args, rest = parser.parse_known_args()
     update_config(args.cfg)
     return args
@@ -179,7 +181,8 @@ if __name__ == '__main__':
     random.seed(config.seed)
 
     mode = 'test_unannotated' if args.eval else 'val'
-    path = "/home/leohsu-cs/DLCV2023/DLCV-Fall-2023-Final-2-boss-sdog/DLCV_vq2d_data"
+    path = args.clipRoot
+    # "/home/leohsu-cs/DLCV2023/DLCV-Fall-2023-Final-2-boss-sdog/DLCV_vq2d_data"
     # '/vision/hwjiang/episodic-memory/VQ2D/data'
     annotation_path = os.path.join(path, 'vq_{}.json'.format(mode))
     with open(annotation_path) as fp:

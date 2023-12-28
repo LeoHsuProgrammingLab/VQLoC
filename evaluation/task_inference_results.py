@@ -93,7 +93,6 @@ class Task:
                 recent_peak = peak
                 break
             if recent_peak is not None:
-                print("recent_peak", recent_peak)
                 threshold = ret_scores_sm[recent_peak] * PEAK_WINDOW_THRESHOLD
                 latest_idx = [recent_peak]
                 for idx in range(recent_peak, 0, -1):
